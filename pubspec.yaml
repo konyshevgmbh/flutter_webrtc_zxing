@@ -1,6 +1,6 @@
 name: flutter_webrtc_zxing
 description: Barcode scanner and generator for all Flutter platforms. Uses WebRTC for camera and zxing-wasm for web — no platform-specific code required.
-version: 0.1.0
+version: 0.2.0
 repository: https://github.com/konyshevgmbh/flutter_webrtc_zxing
 
 environment:

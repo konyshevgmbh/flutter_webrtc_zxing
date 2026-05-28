@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+
+* Fixed web barcode generation: non-QR formats (Code128, EAN, Aztec, DataMatrix, etc.) now generate correctly. Previously `ecLevel` was passed for all formats, causing "Invalid ecLevel" errors from zxing-wasm for formats that don't support error correction levels.
+
 ## 0.1.0
 
 Complete rewrite as `flutter_webrtc_zxing` — a new package forked from the original `flutter_zxing`.
