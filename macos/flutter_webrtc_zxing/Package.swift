@@ -9,7 +9,7 @@ let package = Package(
         .macOS("10.15")
     ],
     products: [
-        .library(name: "flutter-zxing", targets: ["flutter_webrtc_zxing"])
+        .library(name: "flutter-webrtc-zxing", targets: ["flutter_webrtc_zxing"])
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework")

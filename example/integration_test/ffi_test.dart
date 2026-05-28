@@ -2,10 +2,13 @@
 ///
 /// Ensure each FFI call actually works on each supported platform
 /// (android, macos, ios, linux, windows) end-to-end.
+/// On web, sync-only APIs (readBarcode / readBarcodes) are skipped since
+/// the web implementation is async-only via WASM.
 library;
 
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_test/flutter_test.dart' show expect, test;
 import 'package:flutter_webrtc_zxing/flutter_webrtc_zxing.dart'
     show DecodeParams, EccLevel, EncodeParams, Format, ImageFormat, zx;
@@ -17,7 +20,7 @@ void main() async {
     assert(zx.version().isNotEmpty);
   });
 
-  test('Zxing.encodeBarcode -> readBarcode(s)', () {
+  test('Zxing.encodeBarcode -> readBarcode(s)', () async {
     const contents = "This is a QR code";
 
     // Encode a QR code image
@@ -30,13 +33,17 @@ void main() async {
       eccLevel: EccLevel.low,
     );
 
-    final enc = zx.encodeBarcode(contents: contents, params: encodeParams);
+    final enc = await zx.encodeBarcode(contents: contents, params: encodeParams);
 
     assert(enc.isValid);
     expect(enc.format, encodeParams.format);
     expect(enc.text, contents);
     assert(enc.data != null);
     assert(enc.length! > 0);
+
+    // On web, encodeBarcode returns a PNG (not raw grayscale pixels), and
+    // readBarcode / readBarcodes are async-only — skip the sync tests.
+    if (kIsWeb) return;
 
     final dataU8 = enc.data!;
     expect(dataU8.length, encodeParams.width * encodeParams.height);
@@ -84,6 +91,8 @@ void main() async {
   });
 
   test('Zxing.readBarcode(s) (bad image)', () {
+    if (kIsWeb) return; // sync readBarcode / readBarcodes not supported on web
+
     // Build an empty, white image
     const width = 100;
     const height = 100;

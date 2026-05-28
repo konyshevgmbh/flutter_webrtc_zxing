@@ -3,8 +3,6 @@ name: deploy
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   deploy-web:
@@ -13,27 +11,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive   # zxing-cpp lives in src/zxing submodule
+          submodules: recursive
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.4'
           channel: 'stable'
+          cache: true
 
-      - name: Get dependencies (library)
-        run: flutter pub get
-
-      - name: Get dependencies (example)
-        working-directory: example
-        run: flutter pub get
+      - uses: bluefireteam/melos-action@v3
+        with:
+          run-bootstrap: true
+          enforce-lockfile: true
 
       - name: Build web
         working-directory: example
         run: flutter build web --base-href "/flutter_webrtc_zxing/"
 
       - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

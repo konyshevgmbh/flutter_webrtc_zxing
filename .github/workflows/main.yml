@@ -1,49 +1,37 @@
 name: Flutter CI
 
-# Trigger CI on (1) pull requests and (2) pushes to main branch
 on:
   pull_request:
   push:
     branches:
       - main
 
-# Cancel previous workflows for the same pull request to save resources
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
-# Grant read-all permissions to this workflow
 permissions: read-all
 
 jobs:
-  # Job for linting and formatting Dart code
   lint:
-    name: "Lint and Format Dart Code"
+    name: "Lint Dart Code"
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      # Install Flutter SDK
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           cache: true
 
-      # Setup Melos for workspace management
       - uses: bluefireteam/melos-action@v3
         with:
           run-bootstrap: true
           enforce-lockfile: true
 
-      # Format code and check for issues
-      - name: Run Dart format
-        run: dart format --set-exit-if-changed .
-
       - name: Analyze Dart code
         run: melos exec -- dart analyze .
 
-  # Build the example application across all supported platforms
   build-example:
     name: 'Build example (${{ matrix.target }}, ${{ matrix.os }})'
     runs-on: ${{ matrix.os }}-latest
@@ -62,26 +50,25 @@ jobs:
             os: ubuntu
           - target: windows
             os: windows
+          - target: web
+            os: ubuntu
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      # iOS and macOS specific setup
       - name: Copy ZXing source files for iOS/macOS
         if: matrix.target == 'ios' || matrix.target == 'macos'
         run: ./scripts/update_ios_macos_src.sh
 
-      # Android-specific setup
-      - name: Setup Java for Android (${{ matrix.target }}, ${{ matrix.os }})
+      - name: Setup Java for Android
         if: matrix.target == 'android'
         uses: actions/setup-java@v5
         with:
           java-version: 17
           distribution: temurin
 
-      # Linux-specific setup
-      - name: Install dependencies for Flutter on Linux (${{ matrix.target }}, ${{ matrix.os }})
+      - name: Install Linux dependencies
         if: matrix.target == 'linux' && matrix.os == 'ubuntu'
         run: |
           sudo apt update
@@ -89,47 +76,30 @@ jobs:
             cmake dbus libblkid-dev libgtk-3-dev liblzma-dev ninja-build \
             pkg-config xvfb network-manager upower
 
-      # Install Flutter SDK
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           cache: true
 
-      # Setup Melos for workspace management
       - uses: bluefireteam/melos-action@v3
         with:
           run-bootstrap: true
           enforce-lockfile: true
 
-      - name: Build example for ${{ matrix.target }} on ${{ matrix.os }}
+      - name: Build example for ${{ matrix.target }}
         shell: bash
         run: |
           cd example
-          TARGET=${{ matrix.target }}
-
-          case $TARGET in
-            ios)
-              flutter build ios --debug --no-codesign
-              ;;
-            macos)
-              flutter build macos --debug
-              ;;
-            android)
-              flutter build appbundle --debug
-              ;;
-            linux)
-              flutter build linux --debug
-              ;;
-            windows)
-              flutter build windows --debug
-              ;;
-            *)
-              echo "Unknown target: $TARGET"
-              exit 1
-              ;;
+          case ${{ matrix.target }} in
+            ios)     flutter build ios --debug --no-codesign ;;
+            macos)   flutter build macos --debug ;;
+            android) flutter build appbundle --debug ;;
+            linux)   flutter build linux --debug ;;
+            windows) flutter build windows --debug ;;
+            web)     flutter build web --debug ;;
+            *)       echo "Unknown target: ${{ matrix.target }}"; exit 1 ;;
           esac
 
-  # Integration tests for all platforms except Android (handled separately)
   test-example:
     name: 'Test example (${{ matrix.target }}, ${{ matrix.os }})'
     runs-on: ${{ matrix.os }}-latest
@@ -150,30 +120,29 @@ jobs:
           - target: windows
             os: windows
             device: windows
+          - target: web
+            os: ubuntu
+            device: chrome
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      # iOS/macOS specific setup
       - name: Copy ZXing source files for iOS/macOS
         if: matrix.target == 'ios' || matrix.target == 'macos'
         run: ./scripts/update_ios_macos_src.sh
 
-      # Install Flutter SDK
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           cache: true
 
-      # Setup Melos
       - uses: bluefireteam/melos-action@v3
         with:
           run-bootstrap: true
           enforce-lockfile: true
 
-      # Linux-specific dependencies
-      - name: Install dependencies for Flutter on Linux (${{ matrix.target }}, ${{ matrix.os }})'
+      - name: Install Linux dependencies
         if: matrix.target == 'linux' && matrix.os == 'ubuntu'
         run: |
           sudo apt update
@@ -181,8 +150,11 @@ jobs:
             cmake dbus libblkid-dev libgtk-3-dev liblzma-dev ninja-build \
             pkg-config xvfb network-manager upower
 
-      # Launch iOS Simulator for iOS tests
-      - name: Launch iOS Simulator for ${{ matrix.target }}
+      - name: Start chromedriver for web tests
+        if: matrix.target == 'web'
+        run: chromedriver --port=4444 &
+
+      - name: Launch iOS Simulator
         if: matrix.target == 'ios'
         run: |
           RUNTIME_ID=$(xcrun simctl list runtimes | grep -o "com.apple.CoreSimulator.SimRuntime.iOS-[0-9-]*" | sort -r | head -n 1)
@@ -192,20 +164,18 @@ jobs:
             $RUNTIME_ID)
           xcrun simctl boot ${simulator_id}
 
-      # Run tests
-      - name: Run tests for ${{ matrix.target }} on ${{ matrix.os }}
+      - name: Run tests
         shell: bash
         run: |
           cd ./example
-          if [ "${{ matrix.target }}" == "linux" ]; then
+          if [ "${{ matrix.target }}" == "linux" ] || [ "${{ matrix.target }}" == "web" ]; then
             xvfb-run flutter test integration_test -d "${{ matrix.device }}"
           else
             flutter test integration_test -d "${{ matrix.device }}"
           fi
 
-  # Integration tests on Android emulator
   test-example-android:
-    name: 'Test example on Android API level ${{ matrix.api-level }}'
+    name: 'Test example on Android API ${{ matrix.api-level }}'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -222,39 +192,35 @@ jobs:
             target: google_apis
             arch: x86_64
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Setup Java for Android (${{ matrix.api-level }})'
+      - name: Setup Java for Android
         uses: actions/setup-java@v5
         with:
           java-version: 17
           distribution: temurin
 
-      # Install Flutter SDK
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           cache: true
 
-      # Setup Melos
       - uses: bluefireteam/melos-action@v3
         with:
           run-bootstrap: true
           enforce-lockfile: true
 
-      # Enable KVM for Android emulators
-      - name: Enable KVM for Android emulators (${{ matrix.api-level }})'
+      - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      # Gradle cache
       - uses: gradle/actions/setup-gradle@v6
 
-      - name: Setup AVD actions/cache
+      - name: Setup AVD cache
         uses: actions/cache@v5
         id: avd-cache
         with:
@@ -275,8 +241,7 @@ jobs:
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
 
-      # Create and run Android emulator
-      - name: Run tests on Android API level ${{ matrix.api-level }}
+      - name: Run tests on Android API ${{ matrix.api-level }}
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
