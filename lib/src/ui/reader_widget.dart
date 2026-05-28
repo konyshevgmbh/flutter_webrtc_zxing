@@ -244,8 +244,7 @@ class _ReaderWidgetState extends State<ReaderWidget>
     _isStarting = true;
     dbg('[cam] _startCamera begin  front=$_useFrontCamera');
     try {
-      if (defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS) {
+      if (!kIsWeb) {
         dbg('[cam] WebRTC.initialize…');
         await WebRTC.initialize();
         dbg('[cam] WebRTC.initialize done');
