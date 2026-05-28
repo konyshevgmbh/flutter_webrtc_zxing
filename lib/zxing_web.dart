@@ -327,11 +327,15 @@ class ZxingWeb implements Zxing {
 
     final String formatName = _formatToName[params.format] ?? 'QRCode';
     // zxing-wasm WriterOptions: sizeHint (pixels), ecLevel ("L"/"M"/"Q"/"H"), withQuietZones
+    // ecLevel is only valid for formats in Format.eccSupported (QR Code etc.); omit it for linear codes.
     const Map<int, String> eccMap = <int, String>{2: 'L', 4: 'M', 6: 'Q', 8: 'H'};
+    final String? ecLevel = CodeFormat.eccSupported.contains(params.format)
+        ? eccMap[params.eccLevel.value]
+        : null;
     final Map<String, dynamic> options = <String, dynamic>{
       'format': formatName,
       'sizeHint': params.width,
-      'ecLevel': eccMap[params.eccLevel.value] ?? '',
+      'ecLevel': ?ecLevel,
       'withQuietZones': params.margin > 0,
     };
 
