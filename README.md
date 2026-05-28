@@ -70,40 +70,25 @@ Camera access uses [flutter_webrtc](https://pub.dev/packages/flutter_webrtc), so
 
 ### Add as a dependency
 
-Since this package is not published on pub.dev, reference it directly from GitHub:
-
 ```yaml
-# pubspec.yaml
 dependencies:
-  flutter_webrtc_zxing:
-    git:
-      url: https://github.com/konyshevgmbh/flutter_webrtc_zxing.git
-      ref: main
+  flutter_webrtc_zxing: ^0.1.0
 ```
 
-> **Note:** git dependencies do not fetch submodules automatically.  
-> For Android, Windows, and Linux the plugin uses prebuilt bindings and works out of the box.  
-> For **iOS and macOS** use a local path (see below).
-
-### iOS / macOS: use a local clone
-
-The iOS and macOS builds require the `zxing-cpp` C++ sources to be copied into the plugin's `ios/` and `macos/` directories. This is done once via a script that needs macOS and `cmake`.
-
-```bash
-# 1. Clone with submodules
-git clone --recursive https://github.com/konyshevgmbh/flutter_webrtc_zxing.git
-
-# 2. Copy C++ sources for iOS / macOS (requires macOS, cmake, rsync)
-./flutter_webrtc_zxing/scripts/update_ios_macos_src.sh
-```
-
-Then reference the local clone in your app:
-
-```yaml
-dependency_overrides:
-  flutter_webrtc_zxing:
-    path: ./flutter_webrtc_zxing
-```
+> **iOS / macOS note:** the plugin requires the `zxing-cpp` C++ sources in `ios/` and `macos/`. Run the setup script once after cloning:
+>
+> ```bash
+> git clone --recursive https://github.com/konyshevgmbh/flutter_webrtc_zxing.git
+> ./flutter_webrtc_zxing/scripts/update_ios_macos_src.sh
+> ```
+>
+> Then add a local path override in your app:
+>
+> ```yaml
+> dependency_overrides:
+>   flutter_webrtc_zxing:
+>     path: ./flutter_webrtc_zxing
+> ```
 
 ### Run the example
 
@@ -193,8 +178,6 @@ final Code result = zx.readBarcode(bytes, DecodeParams(imageFormat: ImageFormat.
 ```
 
 ### Generate barcodes
-
-> Not available on web.
 
 ```dart
 import 'package:flutter_webrtc_zxing/flutter_webrtc_zxing.dart';

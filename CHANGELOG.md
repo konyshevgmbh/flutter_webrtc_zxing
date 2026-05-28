@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.0
+
+Complete rewrite as `flutter_webrtc_zxing` — a new package forked from the original `flutter_zxing`.
+
+* Replaced the camera stack: `camera` plugin removed, all platforms now use [flutter_webrtc](https://pub.dev/packages/flutter_webrtc) for a unified camera API across mobile, desktop, and web.
+* Web support via [zxing-wasm](https://github.com/Sec-ant/zxing-wasm) — bundled as Flutter assets, no CDN or `index.html` changes required.
+* Barcode encoding (`encodeBarcode`) now works on web.
+* Asset path resolved dynamically via `Uri.base` so the WASM module loads correctly under any `--base-href`.
+* All other native platforms (Android, iOS, macOS, Windows, Linux) continue to use ZXing C++ via FFI.
+
+---
+
 ## 2.3.0
 
 * Migrated iOS and macOS projects from CocoaPods to Swift Package Manager (SPM).
