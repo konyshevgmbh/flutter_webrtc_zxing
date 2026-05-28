@@ -1,19 +1,22 @@
-name: flutter_zxing
-description: A barcode scanner and generator natively in Flutter with Dart FFI based on ZXing.
+name: flutter_webrtc_zxing
+description: Barcode scanner and generator for all Flutter platforms. Uses WebRTC for camera and zxing-wasm for web — no platform-specific code required.
 version: 2.3.0
-repository: https://github.com/khoren93/flutter_zxing
+repository: https://github.com/konyshevgmbh/flutter_webrtc_zxing
 
 environment:
-  sdk: '>=3.11.0 <4.0.0'
-  flutter: ">=3.41.0"
+  sdk: '>=3.9.0 <4.0.0'
+  flutter: ">=3.35.0"
 
 dependencies:
-  camera: ">=0.10.5 <0.13.0"
+  flutter_webrtc: ^1.4.1
   ffi: ^2.0.0
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
   image: ^4.1.0
   image_picker: ^1.0.0
+  web: ^1.1.0
 
 dev_dependencies:
   ffigen: ">=12.0.0 <21.0.0" # dart run ffigen --config ffigen.yaml
@@ -23,10 +26,17 @@ dev_dependencies:
   melos: ">=5.0.0 <8.0.0"
 
 flutter:
+  # Pre-built zxing-wasm assets for web (see lib/web/zxing/version.txt for how to update)
+  assets:
+    - lib/web/share.js
+    - lib/web/zxing/index.js
+    - lib/web/zxing/zxing_full.wasm
   plugin:
     platforms:
       android:
         ffiPlugin: true
+        package: com.markosyan.flutter_webrtc_zxing
+        pluginClass: FlutterWebrtcZxingPlugin
       ios:
         ffiPlugin: true
       linux:
@@ -35,10 +45,18 @@ flutter:
         ffiPlugin: true
       windows:
         ffiPlugin: true
+      web:
+        pluginClass: FlutterWebrtcZxingPlugin
+        fileName: zxing_web.dart
 
 # Publish to pub.dev
 # flutter pub publish --dry-run
 # flutter pub publish
 
-# Update zxing-cpp submodule
+# Update zxing-cpp submodule (native)
 # git submodule update --remote
+
+# Update zxing-wasm (web) — see lib/web/zxing/version.txt
+# curl -L https://cdn.jsdelivr.net/npm/zxing-wasm@<VERSION>/dist/es/share.js         -o lib/web/share.js
+# curl -L https://cdn.jsdelivr.net/npm/zxing-wasm@<VERSION>/dist/es/full/index.js    -o lib/web/zxing/index.js
+# curl -L https://cdn.jsdelivr.net/npm/zxing-wasm@<VERSION>/dist/full/zxing_full.wasm -o lib/web/zxing/zxing_full.wasm

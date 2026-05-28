@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:camera/camera.dart';
-
-import 'flutter_zxing.dart';
+import 'package:image_picker/image_picker.dart';
+import 'flutter_webrtc_zxing.dart';
 import 'src/logic/zxing.dart';
 
 export 'generated_bindings.dart';
@@ -26,10 +25,10 @@ class ZxingMobile implements Zxing {
   String barcodeFormatName(int format) => zxingBarcodeFormatName(format);
 
   @override
-  Encode encodeBarcode({
+  Future<Encode> encodeBarcode({
     required String contents,
     required EncodeParams params,
-  }) => zxingEncodeBarcode(contents: contents, params: params);
+  }) async => zxingEncodeBarcode(contents: contents, params: params);
 
   @override
   Future<void> startCameraProcessing() => zxingStartCameraProcessing();
@@ -38,16 +37,36 @@ class ZxingMobile implements Zxing {
   void stopCameraProcessing() => zxingStopCameraProcessing();
 
   @override
-  Future<Code> processCameraImage(
-    CameraImage image,
-    DecodeParams params,
-  ) async => await zxingProcessCameraImage(image, params) as Code;
+  Future<Code> processWebRtcFrame(
+    Uint8List encodedBytes,
+    DecodeParams params, {
+    double cropPercent = 0.5,
+    double horizontalCropOffset = 0.0,
+    double verticalCropOffset = 0.0,
+  }) async =>
+      await zxingProcessWebRtcFrame(
+        encodedBytes,
+        params,
+        cropPercent: cropPercent,
+        horizontalCropOffset: horizontalCropOffset,
+        verticalCropOffset: verticalCropOffset,
+      ) as Code;
 
   @override
-  Future<Codes> processCameraImageMulti(
-    CameraImage image,
-    DecodeParams params,
-  ) async => await zxingProcessCameraImage(image, params) as Codes;
+  Future<Codes> processWebRtcFrameMulti(
+    Uint8List encodedBytes,
+    DecodeParams params, {
+    double cropPercent = 0.5,
+    double horizontalCropOffset = 0.0,
+    double verticalCropOffset = 0.0,
+  }) async =>
+      await zxingProcessWebRtcFrame(
+        encodedBytes,
+        params,
+        cropPercent: cropPercent,
+        horizontalCropOffset: horizontalCropOffset,
+        verticalCropOffset: verticalCropOffset,
+      ) as Codes;
 
   @override
   Future<Code> readBarcodeImagePathString(String path, DecodeParams params) =>

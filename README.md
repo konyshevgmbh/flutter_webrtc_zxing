@@ -1,49 +1,41 @@
 # Flutter ZXing
 
-Flutter ZXing is a high-performance Flutter plugin for scanning and generating QR codes and barcodes. Built on the powerful [ZXing C++ library](https://github.com/zxing-cpp/zxing-cpp), it provides fast and reliable barcode processing capabilities for Flutter applications. Whether you need to scan barcodes from the camera or generate custom QR codes, Flutter ZXing makes it seamless and efficient.
+Flutter ZXing is a high-performance Flutter plugin for scanning and generating QR codes and barcodes. Built on the powerful [ZXing C++ library](https://github.com/zxing-cpp/zxing-cpp), it provides fast and reliable barcode processing on **all Flutter platforms** — mobile, desktop, and web.
+
+Camera access uses [flutter_webrtc](https://pub.dev/packages/flutter_webrtc), so the same scanning widget works on Android, iOS, macOS, Windows, Linux, and Web without any platform-specific code in your app.
+
+---
+
+## Live Demo
+
+**[https://konyshevgmbh.github.io/flutter_webrtc_zxing/](https://konyshevgmbh.github.io/flutter_webrtc_zxing/)**
 
 ---
 
 ## Table of Contents
 
-- [Flutter ZXing](#flutter-zxing)
-  - [Table of Contents](#table-of-contents)
-  - [Demo Screenshots](#demo-screenshots)
-  - [Features](#features)
-  - [Supported Formats](#supported-formats)
-  - [Supported Platforms](#supported-platforms)
-  - [ZXScanner](#zxscanner)
-    - [Features](#features-1)
-    - [Try ZXScanner](#try-zxscanner)
-  - [Getting Started](#getting-started)
-    - [Cloning the flutter\_zxing project](#cloning-the-flutter_zxing-project)
-    - [Installing dependencies](#installing-dependencies)
-  - [Usage](#usage)
-    - [To read barcode](#to-read-barcode)
-    - [To create barcode](#to-create-barcode)
-  - [License](#license)
-
----
-
-## Demo Screenshots
-
-<p align="center">
-  <img alt="Scanner Screen" src="https://user-images.githubusercontent.com/11523360/222677044-a15841a7-e617-44bb-b3a0-66b2d5b57dce.png" width="240">
-  <img alt="Creator Screen" src="https://user-images.githubusercontent.com/11523360/222677058-60a676fd-c229-4b51-8780-f40155cb5db6.png" width="240">
-</p>
-<p align="center">
-  <i>Left: Barcode Scanner, Right: QR Code Creator</i>
-</p>
+- [Features](#features)
+- [Supported Formats](#supported-formats)
+- [Supported Platforms](#supported-platforms)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+  - [ReaderWidget (recommended)](#readerwidget-recommended)
+  - [Process frames manually](#process-frames-manually)
+  - [Read from file or URL](#read-from-file-or-url)
+  - [Generate barcodes](#generate-barcodes)
+- [Web setup](#web-setup)
+- [License](#license)
 
 ---
 
 ## Features
 
-- Scan QR codes and barcodes from the camera stream (on mobile platforms only), image file, or URL.
-- Scan multiple barcodes at once from the camera stream (on mobile platforms only), image file, or URL.
-- Generate QR codes with customizable content and size.
-- Return the position points of the scanned barcode.
-- Customizable scanner frame size and color, and the ability to enable or disable features like torch and pinch to zoom.
+- Scan QR codes and barcodes from the **live camera stream on all platforms** (mobile, desktop, and web).
+- Scan multiple barcodes at once.
+- Read barcodes from an image file or URL.
+- Generate QR codes and barcodes with customizable content and size.
+- Returns the position and corner points of every detected barcode.
+- Drop-in `ReaderWidget` with built-in scanner overlay, camera toggle, and gallery picker.
 
 ---
 
@@ -63,194 +55,206 @@ Flutter ZXing is a high-performance Flutter plugin for scanning and generating Q
 
 ## Supported Platforms
 
-| Platform   | Status               | Notes                                     |
-|------------|----------------------|-------------------------------------------|
-| Android    | ✅ Fully Supported   | Minimum API level 21                      |
-| iOS        | ✅ Fully Supported   | Minimum iOS 11.0                          |
-| MacOS      | ⚠️ Beta              | Without Camera support                    |
-| Linux      | ⚠️ Beta              | Without Camera support                    |
-| Windows    | ⚠️ Beta              | Without Camera support                    |
-| Web        | ❌ Not Supported     | Dart FFI is not available on the web      |
-
-> Note: Flutter ZXing relies on the Dart FFI feature, making it unsupported on the web. Camera-based scanning is only available on mobile platforms.
+| Platform | Scanning | Generating | Notes |
+|----------|----------|------------|-------|
+| Android  | ✅ | ✅ | API 21+. Tested. |
+| iOS      | ⚠️ | ⚠️ | iOS 11+. Not personally tested — should work. |
+| macOS    | ⚠️ | ⚠️ | Not personally tested — should work. |
+| Windows  | ✅ | ✅ | Tested. |
+| Linux    | ⚠️ | ⚠️ | Not personally tested — should work. |
+| Web      | ✅ | ✅ | Tested. Uses [zxing-wasm](https://github.com/Sec-ant/zxing-wasm) — first scan has a cold-start delay while the WASM module loads (~300 ms). See [Web setup](#web-setup). |
 
 ---
 
-
-## ZXScanner
-
-ZXScanner is a free QR code and barcode scanner app for Android and iOS. It is built using Flutter and the [flutter_zxing](https://github.com/khoren93/flutter_zxing) plugin.
-
-<p align="center">
-    <a href="https://github.com/khoren93/flutter_zxing/tree/main/zxscanner">
-        <img src="https://user-images.githubusercontent.com/11523360/178162663-57ec28ac-7075-43ab-ac31-35058298c73e.png" alt="ZXScanner logo" height="100">
-    </a>
-</p>
-
-### Features
-- Fast and reliable QR code and barcode scanning.
-- Built-in support for multiple barcode formats.
-- Fully open-source and customizable.
-
-### Try ZXScanner
-To learn more or contribute, visit the [ZXScanner repository](https://github.com/khoren93/flutter_zxing/tree/main/zxscanner).
-
 ## Getting Started
 
-### Cloning the flutter_zxing project
+### Add as a dependency
 
-To clone the flutter_zxing project from Github which includes submodules, use the following command:
+Since this package is not published on pub.dev, reference it directly from GitHub:
 
-```bash
-git clone --recursive https://github.com/khoren93/flutter_zxing.git
+```yaml
+# pubspec.yaml
+dependencies:
+  flutter_webrtc_zxing:
+    git:
+      url: https://github.com/konyshevgmbh/flutter_webrtc_zxing.git
+      ref: main
 ```
 
-### Installing dependencies
+> **Note:** git dependencies do not fetch submodules automatically.  
+> For Android, Windows, and Linux the plugin uses prebuilt bindings and works out of the box.  
+> For **iOS and macOS** use a local path (see below).
 
-Use Melos to install the dependencies of the flutter_zxing project. Melos is a tool that helps you manage multiple Dart packages in a single repository. To install Melos, use the following command:
+### iOS / macOS: use a local clone
 
-```bash
-flutter pub global activate melos
-```
-
-To install the dependencies of the flutter_zxing project, use the following command:
+The iOS and macOS builds require the `zxing-cpp` C++ sources to be copied into the plugin's `ios/` and `macos/` directories. This is done once via a script that needs macOS and `cmake`.
 
 ```bash
-melos bootstrap
+# 1. Clone with submodules
+git clone --recursive https://github.com/konyshevgmbh/flutter_webrtc_zxing.git
+
+# 2. Copy C++ sources for iOS / macOS (requires macOS, cmake, rsync)
+./flutter_webrtc_zxing/scripts/update_ios_macos_src.sh
 ```
 
-To allow the building on iOS and MacOS, you need to run the following command:
+Then reference the local clone in your app:
 
-```bash
-./scripts/update_ios_macos_src.sh
-```
-
-To run the integration tests:
-
-```bash
-cd example
-flutter test integration_test
-```
-
-Now you can run the flutter_zxing example app on your device or emulator.
-
-### Use with dependency_overrides
-
-If you want to use a forked version of the flutter_zxing library in your project, you can specify it using `dependency_overrides` in your `pubspec.yaml`. However, be aware that `flutter_zxing` relies on the ZXing C++ code included as a git submodule. When using `dependency_overrides` with a git repository, these submodules are not automatically included, and the `update_ios_macos_src.sh` script is not run, which can lead to errors, especially on iOS.
-
-Your project might build but encounter runtime errors due to missing library exports that appear as an error like this: `flutter: type 'ArgumentError' is not a subtype of type 'Code' in type cast`
-
-#### Recommended Approach: Using a Git Submodule
-
-To ensure all necessary files are present, it's recommended to add your forked repository as a git submodule, initialize the submodules recursively, and reference it using a local path. Follow these steps:
-
-1. In your project add your fork as a submodule and initialize it recursively.
-```bash
-git submodule add https://github.com/YourUsername/flutter_zxing.git flutter_zxing
-git submodule update --init --recursive
-```
-2. Add your submodule to your `pubspec.yaml` file as a `path` dependency override.
 ```yaml
 dependency_overrides:
-  flutter_zxing:
-    path: ./flutter_zxing
+  flutter_webrtc_zxing:
+    path: ./flutter_webrtc_zxing
 ```
-3. Run `flutter pub get` to install the dependencies.
-4. Run the `scripts/update_ios_macos_src.sh` script to update the iOS and MacOS source files. (Or add it to your own projects build process)
-5. Run `flutter clean` to clear the build cache.
-6. Build and run your project.
 
-#### Why Not Use a Direct Git Reference?
+### Run the example
 
-Referencing your forked repo as a direct `git` reference in the `depenency_overrides` section of the `pubspec.yaml` does not include submodules or run the `update_ios_macos_src.sh` script. Manually running these steps in the `.pub-cache` directory is not practical, since the path changes with each commit.
+```bash
+git clone --recursive https://github.com/konyshevgmbh/flutter_webrtc_zxing.git
+cd flutter_webrtc_zxing/example
+flutter pub get
+flutter run                  # mobile / desktop
+flutter run -d chrome        # web
+```
+
+---
 
 ## Usage
 
-### To read barcode
+### ReaderWidget (recommended)
+
+Drop `ReaderWidget` anywhere in your widget tree — it handles camera initialisation, WebRTC setup, and barcode detection automatically.
 
 ```dart
-import 'package:flutter_zxing/flutter_zxing.dart';
+import 'package:flutter_webrtc_zxing/flutter_webrtc_zxing.dart';
 
-// Use ReaderWidget to quickly read barcode from camera image
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: ReaderWidget(
-      onScan: (result) async {
-        // Do something with the result
-      },
-    ),
-  );
-}
+ReaderWidget(
+  onScan: (Code result) {
+    debugPrint('Scanned: ${result.text}  format: ${result.format}');
+  },
+  onScanFailure: (Code result) {
+    // called every tick when nothing is found
+  },
 
-// Or use flutter_zxing plugin methods 
-// To read barcode from camera image directly
-await zx.startCameraProcessing(); // Call this in initState
-
-cameraController?.startImageStream((image) async {
-    Code result = await zx.processCameraImage(image);
-    if (result.isValid) {
-        debugPrint(result.text);
-    }
-    return null;
-});
-
-zx.stopCameraProcessing(); // Call this in dispose
-
-// To read barcode from XFile, String, url or Uint8List bytes
-XFile xFile = XFile('Your image path');
-Code? resultFromXFile = await zx.readBarcodeImagePath(xFile);
-
-String path = 'Your local image path';
-Code? resultFromPath = await zx.readBarcodeImagePathString(path);
-
-String url = 'Your remote image url';
-Code? resultFromUrl = await zx.readBarcodeImageUrl(url);
-
-Uint8List bytes = Uint8List.fromList(yourImageBytes);
-Code? resultFromBytes = await zx.readBarcode(bytes);
+  // Optional tuning
+  codeFormat: Format.any,       // filter to specific format(s)
+  tryHarder: false,
+  tryInverted: false,
+  cropPercent: 0.5,             // centre crop (0 = full frame)
+  scanDelay: Duration(milliseconds: 500),
+  useFrontCamera: false,
+  targetFps: 10,
+)
 ```
 
-### To create barcode
+**Multi-scan** (several codes at once):
 
 ```dart
-import 'package:flutter_zxing/flutter_zxing.dart';
-import 'dart:typed_data';
+ReaderWidget(
+  isMultiScan: true,
+  onMultiScan: (Codes results) {
+    for (final code in results.codes) {
+      debugPrint('${code.text}');
+    }
+  },
+)
+```
+
+### Process frames manually
+
+Use this when you already have a WebRTC stream and want to scan frames yourself:
+
+```dart
+await zx.startCameraProcessing();   // starts the processing isolate
+
+// inside your frame callback — encodedBytes is Uint8List from RTCVideoTrack.captureFrame()
+final Code result = await zx.processWebRtcFrame(
+  encodedBytes,
+  DecodeParams(format: Format.qrCode),
+  cropPercent: 0.5,
+);
+if (result.isValid) debugPrint(result.text);
+
+zx.stopCameraProcessing();          // call in dispose
+```
+
+### Read from file or URL
+
+```dart
+// From XFile (e.g. image_picker result)
+final Code result = await zx.readBarcodeImagePath(xFile, DecodeParams());
+
+// From local path string
+final Code result = await zx.readBarcodeImagePathString('/path/to/image.jpg', DecodeParams());
+
+// From remote URL
+final Code result = await zx.readBarcodeImageUrl('https://example.com/qr.png', DecodeParams());
+
+// From raw bytes (native only — use readBarcodeImagePath on web)
+final Code result = zx.readBarcode(bytes, DecodeParams(imageFormat: ImageFormat.rgb));
+```
+
+### Generate barcodes
+
+> Not available on web.
+
+```dart
+import 'package:flutter_webrtc_zxing/flutter_webrtc_zxing.dart';
 import 'package:image/image.dart' as imglib;
 
-// Use WriterWidget to quickly create barcode
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: WriterWidget(
-      onSuccess: (result, bytes) {
-        // Do something with the result
-      },
-      onError: (error) {
-        // Do something with the error
-      },
-    ),
+final Encode result = zx.encodeBarcode(
+  contents: 'https://example.com',
+  params: EncodeParams(
+    format: Format.qrCode,
+    width: 256,
+    height: 256,
+    margin: 10,
+    eccLevel: EccLevel.medium,
+  ),
+);
+
+if (result.isValid && result.data != null) {
+  final img = imglib.Image.fromBytes(
+    width: result.width!,
+    height: result.height!,
+    bytes: result.data!.buffer,
+    numChannels: 1,
   );
+  final Uint8List png = imglib.encodePng(img);
+  // display or save png
 }
 
-// Or use FlutterZxing to create barcode directly
-final Encode result = zx.encodeBarcode(
-    contents: 'Text to encode',
-    params: EncodeParams(
-        format: Format.QRCode,
-        width: 120,
-        height: 120,
-        margin: 10,
-        eccLevel: EccLevel.low,
-    ),
-);
-if (result.isValid && result.data != null) {
-    final img = imglib.Image.fromBytes(width, height, result.data!.buffer, numChannels: 1);
-    final Uint8List encodedBytes = imglib.encodePng(img);
-    // use encodedBytes as you wish
-}
+// Or use the built-in widget
+WriterWidget(
+  onSuccess: (Encode result, Uint8List? bytes) { },
+  onError: (String error) { },
+)
 ```
+
+---
+
+## Web setup
+
+On web the library loads a pre-built [zxing-wasm](https://github.com/Sec-ant/zxing-wasm) module from your Flutter asset bundle — **no CDN, no external scripts, no `index.html` changes needed**.
+
+The bundled files live in `lib/web/` and are declared as Flutter assets in the library's `pubspec.yaml`. They are served automatically alongside your app.
+
+### Updating the WASM bundle
+
+When you want to upgrade to a newer `zxing-wasm` version:
+
+```bash
+VERSION=2.2.4   # replace with target version
+
+curl -L https://cdn.jsdelivr.net/npm/zxing-wasm@${VERSION}/dist/es/share.js         -o lib/web/share.js
+curl -L https://cdn.jsdelivr.net/npm/zxing-wasm@${VERSION}/dist/es/full/index.js    -o lib/web/zxing/index.js
+curl -L https://cdn.jsdelivr.net/npm/zxing-wasm@${VERSION}/dist/full/zxing_full.wasm -o lib/web/zxing/zxing_full.wasm
+```
+
+Then update the version in [`lib/web/zxing/version.txt`](lib/web/zxing/version.txt).
+
+---
 
 ## License
 
-MIT License. See [LICENSE](https://github.com/khoren93/flutter_zxing/blob/master/LICENSE).
+MIT. See [LICENSE](LICENSE).
+
+Original work © 2022 Khoren Markosyan. Modifications © 2025 Igor Konyshev.

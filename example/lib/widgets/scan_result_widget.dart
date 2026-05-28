@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_zxing/flutter_zxing.dart';
+import 'package:flutter_webrtc_zxing/flutter_webrtc_zxing.dart';
 
 class ScanResultWidget extends StatelessWidget {
   const ScanResultWidget({super.key, this.result, this.onScanAgain});

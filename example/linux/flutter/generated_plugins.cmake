@@ -4,10 +4,11 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_linux
+  flutter_webrtc
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  flutter_zxing
+  flutter_webrtc_zxing
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

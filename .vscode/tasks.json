@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Generate launcher icons (example)",
+            "type": "shell",
+            "command": "dart run flutter_launcher_icons",
+            "options": {
+                "cwd": "${workspaceFolder}/example"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

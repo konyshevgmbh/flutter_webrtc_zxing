@@ -1,4 +1,4 @@
-group 'com.markosyan.flutter_zxing'
+group 'com.markosyan.flutter_webrtc_zxing'
 version '1.0'
 
 buildscript {
@@ -24,7 +24,7 @@ apply plugin: 'com.android.library'
 android {
     // Conditional for compatibility with AGP <4.2.
     if (project.android.hasProperty("namespace")) {
-        namespace 'com.markosyan.flutter_zxing'
+        namespace 'com.markosyan.flutter_webrtc_zxing'
     }
     compileSdk 34
     ndkVersion "27.0.12077973"

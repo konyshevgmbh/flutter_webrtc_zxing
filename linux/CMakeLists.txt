@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Project-level configuration.
-set(PROJECT_NAME "flutter_zxing")
+set(PROJECT_NAME "flutter_webrtc_zxing")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 # Invoke the build for native code shared with the other target platforms.
@@ -14,9 +14,9 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../src" "${CMAKE_CURRENT_BINARY_DI
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
-set(flutter_zxing_bundled_libraries
+set(flutter_webrtc_zxing_bundled_libraries
   # Defined in ../src/CMakeLists.txt.
   # This can be changed to accomodate different builds.
-  $<TARGET_FILE:flutter_zxing>
+  $<TARGET_FILE:flutter_webrtc_zxing>
   PARENT_SCOPE
 )

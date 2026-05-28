@@ -1,3 +1,3 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.markosyan.flutter_zxing">
+  package="com.markosyan.flutter_webrtc_zxing">
 </manifest>

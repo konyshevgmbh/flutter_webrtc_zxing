@@ -1,0 +1,19 @@
+zxing-wasm 2.2.4
+https://www.npmjs.com/package/zxing-wasm
+
+Files in this directory are pre-built from zxing-cpp and published to npm.
+They must be updated manually when upgrading zxing-wasm.
+
+Files (3 total):
+  lib/web/share.js              — shared ESM chunk (imported by index.js as ../share.js)
+  lib/web/zxing/index.js        — ZXing JS glue (ESM, imports ../share.js)
+  lib/web/zxing/zxing_full.wasm — ZXing WebAssembly binary
+
+To update:
+  1. Check the latest version: https://www.npmjs.com/package/zxing-wasm
+  2. Download new files (replace <VERSION> with the target version):
+       curl -L https://cdn.jsdelivr.net/npm/zxing-wasm@<VERSION>/dist/es/share.js         -o lib/web/share.js
+       curl -L https://cdn.jsdelivr.net/npm/zxing-wasm@<VERSION>/dist/es/full/index.js    -o lib/web/zxing/index.js
+       curl -L https://cdn.jsdelivr.net/npm/zxing-wasm@<VERSION>/dist/full/zxing_full.wasm -o lib/web/zxing/zxing_full.wasm
+  3. Update the version line at the top of this file.
+  4. Check the zxing-wasm changelog for any breaking API changes in readBarcodesFromImageFile.

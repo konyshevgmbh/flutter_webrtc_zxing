@@ -1,6 +1,6 @@
-# flutter_zxing_example
+# flutter_webrtc_zxing_example
 
-Demonstrates how to use the flutter_zxing plugin.
+Demonstrates how to use the flutter_webrtc_zxing plugin.
 
 ## Getting Started
 

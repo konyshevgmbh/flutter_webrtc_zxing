@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-import '../../flutter_zxing.dart';
+import '../../flutter_webrtc_zxing.dart';
 
 /// Widget to create a code from a text and barcode format
 class WriterWidget extends StatefulWidget {
@@ -259,7 +259,7 @@ class _WriterWidgetState extends State<WriterWidget>
     );
   }
 
-  void createBarcode() {
+  Future<void> createBarcode() async {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
       FocusScope.of(context).unfocus();
@@ -268,7 +268,7 @@ class _WriterWidgetState extends State<WriterWidget>
       final int height = int.parse(_heightController.value.text);
       final int margin = int.parse(_marginController.value.text);
       final EccLevel ecc = _eccLevel;
-      final Encode result = zx.encodeBarcode(
+      final Encode result = await zx.encodeBarcode(
         contents: text,
         params: EncodeParams(
           format: _codeFormat,
@@ -281,11 +281,15 @@ class _WriterWidgetState extends State<WriterWidget>
       String? error;
       if (result.isValid && result.data != null) {
         try {
-          final Uint8List encodedBytes = pngFromBytes(
-            result.data!,
-            width,
-            height,
-          );
+          // If data already starts with the PNG magic bytes (e.g. from web/WASM),
+          // use it as-is — converting it again would corrupt the image.
+          final Uint8List data = result.data!;
+          final bool alreadyPng = data.length > 4 &&
+              data[0] == 0x89 && data[1] == 0x50 &&
+              data[2] == 0x4E && data[3] == 0x47;
+          final Uint8List encodedBytes = alreadyPng
+              ? data
+              : pngFromBytes(data, width, height);
           widget.onSuccess?.call(result, encodedBytes);
         } catch (e) {
           error = e.toString();

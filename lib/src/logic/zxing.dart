@@ -4,10 +4,10 @@ import 'dart:isolate';
 // ignore: unnecessary_import
 import 'dart:typed_data';
 
-import 'package:camera/camera.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as imglib;
+import 'package:image_picker/image_picker.dart';
 
 import '../../generated_bindings.dart';
 import '../models/models.dart';

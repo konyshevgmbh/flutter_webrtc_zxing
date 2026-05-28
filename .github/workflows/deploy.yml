@@ -1,0 +1,40 @@
+name: deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy-web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive   # zxing-cpp lives in src/zxing submodule
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.4'
+          channel: 'stable'
+
+      - name: Get dependencies (library)
+        run: flutter pub get
+
+      - name: Get dependencies (example)
+        working-directory: example
+        run: flutter pub get
+
+      - name: Build web
+        working-directory: example
+        run: flutter build web --base-href "/flutter_webrtc_zxing/"
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: example/build/web

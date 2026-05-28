@@ -2,7 +2,7 @@ part of 'zxing.dart';
 
 IsolateUtils? isolateUtils;
 
-/// Starts reading barcode from the camera
+/// Starts the barcode processing isolate
 Future<void> zxingStartCameraProcessing() async {
   if (isolateUtils != null) {
     return;
@@ -11,18 +11,30 @@ Future<void> zxingStartCameraProcessing() async {
   await isolateUtils?.startReadingBarcode();
 }
 
-/// Stops reading barcode from the camera
+/// Stops the barcode processing isolate
 void zxingStopCameraProcessing() {
   isolateUtils?.stopReadingBarcode();
   isolateUtils = null;
 }
 
-Future<dynamic> zxingProcessCameraImage(
-  CameraImage image,
-  DecodeParams params,
-) => _inference(IsolateData(image, params));
+/// Processes a WebRTC video frame (encoded bytes from captureFrame())
+Future<dynamic> zxingProcessWebRtcFrame(
+  Uint8List encodedBytes,
+  DecodeParams params, {
+  double cropPercent = 0.5,
+  double horizontalCropOffset = 0.0,
+  double verticalCropOffset = 0.0,
+}) => _inference(
+  IsolateData(
+    encodedBytes,
+    params,
+    cropPercent: cropPercent,
+    horizontalCropOffset: horizontalCropOffset,
+    verticalCropOffset: verticalCropOffset,
+  ),
+);
 
-/// Runs inference in another isolate
+/// Runs barcode detection in a separate isolate
 Future<dynamic> _inference(IsolateData isolateData) async {
   final ReceivePort responsePort = ReceivePort();
   isolateUtils?.sendPort?.send(

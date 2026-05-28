@@ -1,4 +1,4 @@
-name: flutter_zxing
+name: flutter_webrtc_zxing
 
 packages:
   - example/**

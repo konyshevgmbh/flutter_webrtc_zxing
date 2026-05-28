@@ -7,7 +7,7 @@ library;
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart' show expect, test;
-import 'package:flutter_zxing/flutter_zxing.dart'
+import 'package:flutter_webrtc_zxing/flutter_webrtc_zxing.dart'
     show DecodeParams, EccLevel, EncodeParams, Format, ImageFormat, zx;
 
 void main() async {

@@ -1,10 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_zxing/flutter_zxing.dart';
+import 'package:flutter_webrtc_zxing/flutter_webrtc_zxing.dart';
 
 import 'widgets/debug_info_widget.dart';
 import 'widgets/scan_result_widget.dart';
-import 'widgets/unsupported_platform_widget.dart';
 
 void main() {
   zx.setLogEnabled(kDebugMode);
@@ -52,9 +51,6 @@ class _DemoPageState extends State<DemoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isCameraSupported =
-        defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -69,11 +65,7 @@ class _DemoPageState extends State<DemoPage> {
         body: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            if (kIsWeb)
-              const UnsupportedPlatformWidget()
-            else if (!isCameraSupported)
-              const Center(child: Text('Camera not supported on this platform'))
-            else if (result != null && result?.isValid == true)
+            if (result != null && result?.isValid == true)
               ScanResultWidget(
                 result: result,
                 onScanAgain: () => setState(() => result = null),
@@ -87,7 +79,7 @@ class _DemoPageState extends State<DemoPage> {
                     onMultiScan: _onMultiScanSuccess,
                     onMultiScanFailure: _onMultiScanFailure,
                     onMultiScanModeChanged: _onMultiScanModeChanged,
-                    onControllerCreated: _onControllerCreated,
+                    onRendererCreated: _onRendererCreated,
                     isMultiScan: isMultiScan,
                     cropPercent: 0.5,
                     verticalCropOffset: 0,
@@ -102,12 +94,7 @@ class _DemoPageState extends State<DemoPage> {
                     tryDownscale: true,
                     maxNumberOfSymbols: 5,
                     scanDelay: Duration(milliseconds: isMultiScan ? 50 : 500),
-                    resolution: ResolutionPreset.high,
-                    lensDirection: CameraLensDirection.back,
-                    flashOnIcon: const Icon(Icons.flash_on),
-                    flashOffIcon: const Icon(Icons.flash_off),
-                    flashAlwaysIcon: const Icon(Icons.flash_on),
-                    flashAutoIcon: const Icon(Icons.flash_auto),
+                    useFrontCamera: false,
                     galleryIcon: const Icon(Icons.photo_library),
                     toggleCameraIcon: const Icon(Icons.switch_camera),
                     actionButtonsBackgroundBorderRadius: BorderRadius.circular(
@@ -136,10 +123,7 @@ class _DemoPageState extends State<DemoPage> {
                     ),
                 ],
               ),
-            if (kIsWeb)
-              const UnsupportedPlatformWidget()
-            else
-              SingleChildScrollView(
+            SingleChildScrollView(
                 child: Column(
                   children: [
                     WriterWidget(
@@ -164,9 +148,8 @@ class _DemoPageState extends State<DemoPage> {
     );
   }
 
-  void _onControllerCreated(CameraController? controller, Exception? error) {
+  void _onRendererCreated(dynamic renderer, Exception? error) {
     if (error != null) {
-      // Handle permission or unknown errors
       _showMessage(context, 'Error: $error');
     }
   }

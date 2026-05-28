@@ -28,5 +28,9 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSCameraUsageDescription</key>
+	<string>$(APP_DISPLAY_NAME) needs camera access to scan barcodes</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>$(APP_DISPLAY_NAME) requires microphone access for WebRTC camera initialisation</string>
 </dict>
 </plist>

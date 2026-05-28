@@ -1,4 +1,4 @@
-//! The native C++ FFI impl for `flutter_zxing`.
+//! The native C++ FFI impl for `flutter_webrtc_zxing`.
 //!
 //! ### Tips writing FFI code
 //!

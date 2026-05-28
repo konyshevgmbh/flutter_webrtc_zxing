@@ -1,24 +1,32 @@
 import 'dart:isolate';
+import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:camera/camera.dart';
+import 'package:image/image.dart' as imglib;
 
 import '../logic/zxing.dart';
 import '../models/models.dart';
 import 'image_converter.dart';
 
-// Inspired from https://github.com/am15h/object_detection_flutter
-
-/// Bundles data to pass between Isolate
+/// Bundles data to pass between isolates
 class IsolateData {
-  IsolateData(this.cameraImage, this.params);
-  CameraImage cameraImage;
-  DecodeParams params;
+  IsolateData(
+    this.encodedBytes,
+    this.params, {
+    this.cropPercent = 0.5,
+    this.horizontalCropOffset = 0.0,
+    this.verticalCropOffset = 0.0,
+  });
 
+  final Uint8List encodedBytes;
+  final DecodeParams params;
+  final double cropPercent;
+  final double horizontalCropOffset;
+  final double verticalCropOffset;
   SendPort? responsePort;
 }
 
-/// Manages separate Isolate instance for inference
+/// Manages separate Isolate instance for barcode detection
 class IsolateUtils {
   static const String kDebugName = 'ZxingIsolate';
 
@@ -42,7 +50,6 @@ class IsolateUtils {
         _receivePort.sendPort,
         debugName: kDebugName,
       );
-
       _sendPort = await _receivePort.first;
     } catch (_) {
       rethrow;
@@ -62,22 +69,56 @@ class IsolateUtils {
     sendPort.send(port.sendPort);
 
     await for (final IsolateData? isolateData in port) {
-      if (isolateData != null) {
-        try {
-          final CameraImage image = isolateData.cameraImage;
-          final Uint8List bytes = await convertImage(image);
-          final DecodeParams params = isolateData.params;
-
-          dynamic result;
-          if (params.isMultiScan) {
-            result = zxingReadBarcodes(bytes, params);
-          } else {
-            result = zxingReadBarcode(bytes, params);
-          }
-          isolateData.responsePort?.send(result);
-        } catch (e) {
-          isolateData.responsePort?.send(e);
+      if (isolateData == null) {
+        continue;
+      }
+      try {
+        imglib.Image? image = imglib.decodeImage(isolateData.encodedBytes);
+        if (image == null) {
+          isolateData.responsePort?.send(
+            isolateData.params.isMultiScan ? Codes() : Code(),
+          );
+          continue;
         }
+        image = resizeToMaxSize(image, isolateData.params.maxSize);
+
+        final DecodeParams params = isolateData.params;
+        params.width = image.width;
+        params.height = image.height;
+        params.imageFormat = ImageFormat.rgb;
+
+        final double cropPercent = isolateData.cropPercent;
+        if (cropPercent > 0) {
+          final int cropSize =
+              (min(image.width, image.height) * cropPercent).round();
+          params.cropLeft =
+              ((image.width - cropSize) ~/ 2 +
+                      (isolateData.horizontalCropOffset *
+                              (image.width - cropSize) /
+                              2))
+                  .round()
+                  .clamp(0, image.width - cropSize);
+          params.cropTop =
+              ((image.height - cropSize) ~/ 2 +
+                      (isolateData.verticalCropOffset *
+                              (image.height - cropSize) /
+                              2))
+                  .round()
+                  .clamp(0, image.height - cropSize);
+          params.cropWidth = cropSize;
+          params.cropHeight = cropSize;
+        }
+
+        final Uint8List bytes = rgbBytes(image);
+        dynamic result;
+        if (params.isMultiScan) {
+          result = zxingReadBarcodes(bytes, params);
+        } else {
+          result = zxingReadBarcode(bytes, params);
+        }
+        isolateData.responsePort?.send(result);
+      } catch (e) {
+        isolateData.responsePort?.send(e);
       }
     }
   }
