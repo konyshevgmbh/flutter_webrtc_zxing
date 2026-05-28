@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.markosyan.flutter_webrtc_zxing_example"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "28.2.13676358"
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
