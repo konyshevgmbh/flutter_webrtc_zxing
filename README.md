@@ -4,6 +4,8 @@ Flutter ZXing is a high-performance Flutter plugin for scanning and generating Q
 
 Camera access uses [flutter_webrtc](https://pub.dev/packages/flutter_webrtc), so the same scanning widget works on Android, iOS, macOS, Windows, Linux, and Web without any platform-specific code in your app.
 
+> **Note:** This is an experimental fork of [khoren93/flutter_zxing](https://github.com/khoren93/flutter_zxing) that replaces the `camera` plugin with WebRTC for unified cross-platform camera support. If you don't need web or desktop camera scanning, the original package is simpler and more lightweight.
+
 ---
 
 ## pub.dev
