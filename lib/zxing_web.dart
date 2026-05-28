@@ -31,7 +31,7 @@ external JSPromise<JSString> _jsWriteBarcode(
 // ── Bridge initialisation ────────────────────────────────────────────────────
 
 // Flutter web serves plugin assets at this base path.
-const String _assetBase = '/assets/packages/flutter_webrtc_zxing/lib/web/zxing';
+const String _assetBase = '/assets/packages/flutter_webrtc_zxing/web/zxing';
 
 // Inline ES-module that imports from the bundled assets and exposes
 // window.flutterZxingReadBarcodes.  Injected once as <script type="module">.
