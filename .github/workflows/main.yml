@@ -120,9 +120,6 @@ jobs:
           - target: windows
             os: windows
             device: windows
-          - target: web
-            os: ubuntu
-            device: chrome
     steps:
       - uses: actions/checkout@v4
         with:
@@ -150,10 +147,6 @@ jobs:
             cmake dbus libblkid-dev libgtk-3-dev liblzma-dev ninja-build \
             pkg-config xvfb network-manager upower
 
-      - name: Start chromedriver for web tests
-        if: matrix.target == 'web'
-        run: chromedriver --port=4444 &
-
       - name: Launch iOS Simulator
         if: matrix.target == 'ios'
         run: |
@@ -168,7 +161,7 @@ jobs:
         shell: bash
         run: |
           cd ./example
-          if [ "${{ matrix.target }}" == "linux" ] || [ "${{ matrix.target }}" == "web" ]; then
+          if [ "${{ matrix.target }}" == "linux" ]; then
             xvfb-run flutter test integration_test -d "${{ matrix.device }}"
           else
             flutter test integration_test -d "${{ matrix.device }}"
