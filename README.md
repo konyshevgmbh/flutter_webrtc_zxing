@@ -6,6 +6,12 @@ Camera access uses [flutter_webrtc](https://pub.dev/packages/flutter_webrtc), so
 
 ---
 
+## pub.dev
+
+**[https://pub.dev/packages/flutter_webrtc_zxing](https://pub.dev/packages/flutter_webrtc_zxing)**
+
+---
+
 ## Live Demo
 
 **[https://konyshevgmbh.github.io/flutter_webrtc_zxing/](https://konyshevgmbh.github.io/flutter_webrtc_zxing/)**
