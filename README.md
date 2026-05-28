@@ -6,6 +6,8 @@ Camera access uses [flutter_webrtc](https://pub.dev/packages/flutter_webrtc), so
 
 > **Note:** This is an experimental fork of [khoren93/flutter_zxing](https://github.com/khoren93/flutter_zxing) that replaces the `camera` plugin with WebRTC for unified cross-platform camera support. If you don't need web or desktop camera scanning, the original package is simpler and more lightweight.
 
+> **Alternative worth considering:** The [zxing2](https://pub.dev/packages/zxing2) package (scanning and generation) may be a better choice in many cases — it has noticeably better web performance and on native platforms the difference is often negligible. For an example of using `zxing2` together with `flutter_webrtc` for cross-platform camera scanning, see [flutter_webrtc_zxing2](https://github.com/konyshevgmbh/flutter_webrtc_zxing2).
+
 ---
 
 ## pub.dev
