@@ -5,7 +5,7 @@ import 'src/models/models.dart';
 
 import 'zxing_cross.dart'
     if (dart.library.io) 'zxing_mobile.dart'
-    if (dart.library.html) 'zxing_web.dart';
+    if (dart.library.js_interop) 'zxing_web.dart';
 
 export 'src/models/models.dart';
 export 'src/ui/ui.dart';

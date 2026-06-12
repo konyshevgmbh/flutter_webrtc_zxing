@@ -82,7 +82,7 @@ Camera access uses [flutter_webrtc](https://pub.dev/packages/flutter_webrtc), so
 
 ```yaml
 dependencies:
-  flutter_webrtc_zxing: ^0.1.0
+  flutter_webrtc_zxing: ^0.2.1
 ```
 
 > **iOS / macOS note:** the plugin requires the `zxing-cpp` C++ sources in `ios/` and `macos/`. Run the setup script once after cloning:

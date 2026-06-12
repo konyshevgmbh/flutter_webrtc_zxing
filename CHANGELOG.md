@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+* Fixed WASM compatibility: changed conditional import from `dart.library.html` to `dart.library.js_interop` so the web implementation is correctly selected on both JS-web and WASM-web targets.
+
 ## 0.2.0
 
 * Fixed web barcode generation: non-QR formats (Code128, EAN, Aztec, DataMatrix, etc.) now generate correctly. Previously `ecLevel` was passed for all formats, causing "Invalid ecLevel" errors from zxing-wasm for formats that don't support error correction levels.
